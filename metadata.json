@@ -1,0 +1,5 @@
+{
+  "name": "BananaFlow｜ZHO",
+  "description": "A node-based application to create powerful workflows by connecting various Gemini AI models like Gemini 2.5 Flash, Nano Banana for image editing, and Veo for video generation. Visually construct and execute complex AI tasks.",
+  "requestFramePermissions": []
+}
