@@ -1,22 +1,34 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { UploadIcon } from './icons';
 
 interface FileUploaderProps {
   onFileUpload: (file: File) => void;
+  initialContent?: File | string | null;
+  isCompact?: boolean;
 }
 
-export const FileUploader: React.FC<FileUploaderProps> = ({ onFileUpload }) => {
+export const FileUploader: React.FC<FileUploaderProps> = ({ onFileUpload, initialContent, isCompact = false }) => {
   const [preview, setPreview] = useState<string | null>(null);
+
+  useEffect(() => {
+      if (typeof initialContent === 'string') {
+          setPreview(initialContent);
+      } else if (initialContent instanceof File) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+              setPreview(reader.result as string);
+          };
+          reader.readAsDataURL(initialContent);
+      } else {
+          setPreview(null);
+      }
+  }, [initialContent]);
 
   const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       onFileUpload(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
     }
   }, [onFileUpload]);
 
@@ -26,11 +38,6 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onFileUpload }) => {
     const file = event.dataTransfer.files?.[0];
     if (file) {
       onFileUpload(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
     }
   }, [onFileUpload]);
 
@@ -39,37 +46,23 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onFileUpload }) => {
     event.stopPropagation();
   };
 
+  if (preview && !isCompact) {
+      return <img src={preview} alt="Preview" className="object-contain w-full h-full" />;
+  }
+
   return (
-    <div className="w-full">
+    <div className="w-full h-full flex items-center justify-center">
       <label
         onDrop={handleDrop}
         onDragOver={handleDragOver}
-        className="flex justify-center w-full h-32 px-4 transition bg-gray-700 border-2 border-gray-600 border-dashed rounded-md appearance-none cursor-pointer hover:border-indigo-400 focus:outline-none"
+        className="flex flex-col items-center justify-center p-4 transition rounded-lg appearance-none cursor-pointer hover:bg-white/5 w-full h-full"
+        style={{ color: 'var(--uploader-text-color, #6b7280)' }}
       >
-        {preview ? (
-          <img src={preview} alt="Preview" className="object-contain h-full" />
-        ) : (
-          <span className="flex items-center space-x-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-6 h-6 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-              />
-            </svg>
-            <span className="font-medium text-gray-400">
-              Drop file or <span className="text-indigo-400 underline">browse</span>
-            </span>
-          </span>
-        )}
-        <input type="file" name="file_upload" className="hidden" onChange={handleFileChange} accept="image/*" />
+        <UploadIcon className="w-10 h-10 mb-2" />
+        <span className="font-medium text-sm text-center">
+          Drop file or click to browse
+        </span>
+        <input type="file" name="file_upload" className="hidden" onChange={handleFileChange} accept="image/*,video/*" />
       </label>
     </div>
   );

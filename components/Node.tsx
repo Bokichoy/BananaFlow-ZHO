@@ -1,138 +1,249 @@
-
-import React, { useMemo } from 'react';
-// FIX: Import NodeStatus as a value for use in switch statement, not just as a type.
-import type { Node, NodeInput, NodeOutput } from '../types';
+import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import type { Node as NodeTypeInterface, Theme } from '../types';
 import { NodeType, NodeStatus } from '../types';
-import { TextIcon, ImageIcon, MagicIcon, VideoIcon, OutputIcon } from './icons';
+import { TextIcon, ImageIcon, MagicIcon, VideoIcon, OutputIcon, StarIcon, MuteIcon } from './icons';
 import { FileUploader } from './FileUploader';
 import { OutputDisplay } from './OutputDisplay';
 
 interface NodeProps {
-  node: Node;
+  node: NodeTypeInterface;
+  isSelected: boolean;
   onMouseDown: (e: React.MouseEvent<HTMLDivElement>, nodeId: string) => void;
   onHandleMouseDown: (e: React.MouseEvent<HTMLDivElement>, nodeId: string, handleId: string, handleType: 'input' | 'output') => void;
   onResizeMouseDown: (e: React.MouseEvent<HTMLDivElement>, nodeId: string) => void;
-  updateNodeData: (nodeId: string, data: Partial<Node['data']>) => void;
+  updateNodeData: (nodeId: string, data: Partial<NodeTypeInterface['data']>) => void;
+  onEditPrompt: (nodeId: string) => void;
+  edgeColors: Theme['edgeColors'];
 }
 
-const NodeHeader: React.FC<{ type: NodeType }> = ({ type }) => {
-  const config = useMemo(() => {
-    switch (type) {
-      case NodeType.TEXT_INPUT:
-        return { icon: <TextIcon className="w-5 h-5" />, title: 'Text Input', color: 'bg-sky-600' };
-      case NodeType.IMAGE_INPUT:
-        return { icon: <ImageIcon className="w-5 h-5" />, title: 'Image Input', color: 'bg-green-600' };
-      case NodeType.TEXT_GENERATOR:
-        return { icon: <MagicIcon className="w-5 h-5" />, title: 'Text Generator', color: 'bg-indigo-600' };
-      case NodeType.IMAGE_EDITOR:
-        return { icon: <MagicIcon className="w-5 h-5" />, title: 'Image Editor', color: 'bg-purple-600' };
-      case NodeType.VIDEO_GENERATOR:
-        return { icon: <VideoIcon className="w-5 h-5" />, title: 'Video Generator', color: 'bg-rose-600' };
-      case NodeType.OUTPUT_DISPLAY:
-        return { icon: <OutputIcon className="w-5 h-5" />, title: 'Output', color: 'bg-amber-600' };
-      default:
-        return { icon: null, title: 'Unknown', color: 'bg-gray-600' };
-    }
-  }, [type]);
-
-  return (
-    <div className={`flex items-center px-4 py-2 text-white rounded-t-lg ${config.color}`}>
-      {config.icon}
-      <h3 className="ml-2 font-bold">{config.title}</h3>
-    </div>
-  );
-};
-
-const Handle: React.FC<{
+interface HandleProps {
   id: string;
   label: string;
   isInput: boolean;
   onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
-}> = ({ id, label, isInput, onMouseDown }) => (
-  <div className={`relative flex items-center my-2 ${isInput ? 'justify-start' : 'justify-end'}`}>
-    {!isInput && <span className="mr-6 text-sm text-gray-300">{label}</span>}
-    <div
-      id={id}
-      data-handle-type={isInput ? 'input' : 'output'}
-      onMouseDown={onMouseDown}
-      className="absolute top-1/2 w-4 h-4 rounded-full bg-gray-500 hover:bg-indigo-400 cursor-pointer"
-      style={{
-        transform: 'translateY(-50%)',
-        ...(isInput ? { left: '-8px' } : { right: '-8px' }),
-      }}
-    />
-    {isInput && <span className="ml-6 text-sm text-gray-300">{label}</span>}
-  </div>
-);
+  type: 'text' | 'image' | 'video' | 'any';
+  style?: React.CSSProperties;
+  edgeColors: Theme['edgeColors'];
+}
+
+const Handle: React.FC<HandleProps> = ({ id, label, isInput, onMouseDown, type, style, edgeColors }) => {
+    const color = edgeColors?.[type] || '#a3a3a3';
+
+    return (
+        <div
+            className={`absolute -translate-y-1/2 ${isInput ? '-left-3' : '-right-3'} group/handle`}
+            style={style}
+        >
+            <div
+                id={id}
+                data-handle-type={isInput ? 'input' : 'output'}
+                onMouseDown={onMouseDown}
+                className="w-6 h-6 rounded-full bg-neutral-800/80 border-2 border-black/50 group-hover/node:bg-indigo-500 cursor-pointer transition-all duration-300 scale-0 group-hover/node:scale-100 flex items-center justify-center"
+            >
+                <div style={{ backgroundColor: color }} className={`w-2 h-2 rounded-full`} />
+            </div>
+            <span className={`absolute top-1/2 -translate-y-1/2 ${isInput ? 'left-full ml-4' : 'right-full mr-4'} text-xs text-white bg-black/50 px-2 py-1 rounded-md whitespace-nowrap opacity-0 group-hover/handle:opacity-100 transition-opacity pointer-events-none`}>
+                {label}
+            </span>
+        </div>
+    );
+};
 
 
-const NodeComponent: React.FC<NodeProps> = ({ node, onMouseDown, onHandleMouseDown, onResizeMouseDown, updateNodeData }) => {
-    const statusColor = useMemo(() => {
-        switch (node.data.status) {
-            case NodeStatus.PROCESSING: return 'border-indigo-500 animate-pulse';
-            case NodeStatus.COMPLETED: return 'border-green-500';
-            case NodeStatus.ERROR: return 'border-red-500';
-            default: return 'border-gray-700';
+const NodeComponent: React.FC<NodeProps> = ({ node, isSelected, onMouseDown, onHandleMouseDown, onResizeMouseDown, updateNodeData, onEditPrompt, edgeColors }) => {
+  const { data } = node;
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+
+  const config = useMemo(() => {
+    switch (node.type) {
+      case NodeType.TEXT_INPUT: return { icon: <TextIcon className="w-4 h-4" />, title: data.label };
+      case NodeType.IMAGE_INPUT: return { icon: <ImageIcon className="w-4 h-4" />, title: data.label };
+      case NodeType.TEXT_GENERATOR: return { icon: <MagicIcon className="w-4 h-4" />, title: data.label };
+      case NodeType.IMAGE_EDITOR: return { icon: <MagicIcon className="w-4 h-4" />, title: data.label };
+      case NodeType.PROMPT_PRESET: return { icon: null, title: data.label };
+      case NodeType.VIDEO_GENERATOR: return { icon: <VideoIcon className="w-4 h-4" />, title: data.label };
+      case NodeType.OUTPUT_DISPLAY: return { icon: <OutputIcon className="w-4 h-4" />, title: data.label };
+      default: return { icon: null, title: 'Unknown' };
+    }
+  }, [node.type, data.label]);
+
+  useEffect(() => {
+    let objectUrl: string | undefined;
+    if (data.content instanceof File) {
+      objectUrl = URL.createObjectURL(data.content);
+      setImageUrl(objectUrl);
+    } else if (typeof data.content === 'string' && data.content.startsWith('data:image')) {
+      setImageUrl(data.content);
+    } else if (data.content?.image) {
+      setImageUrl(data.content.image);
+    } else {
+      setImageUrl(null);
+    }
+    return () => {
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [data.content]);
+
+  useEffect(() => {
+    if (imageUrl && (node.type === NodeType.IMAGE_INPUT || node.type === NodeType.OUTPUT_DISPLAY)) {
+      const img = new Image();
+      img.onload = () => {
+        const aspectRatio = img.height / img.width;
+        const newWidth = data.width || 350;
+        const newHeight = newWidth * aspectRatio;
+        if (Math.abs((data.height || 0) - newHeight) > 1) {
+          updateNodeData(node.id, { height: newHeight });
         }
-    }, [node.data.status]);
+      };
+      img.src = imageUrl;
+    }
+  }, [imageUrl, data.width, data.height, node.id, updateNodeData, node.type]);
+  
+  const statusClasses = useMemo(() => {
+    switch (data.status) {
+      case NodeStatus.PROCESSING: return 'border-indigo-500/80 ring-2 ring-indigo-500/50 animate-pulse';
+      case NodeStatus.ERROR: return 'border-red-500/80';
+      case NodeStatus.COMPLETED:
+      default: // IDLE
+        return isSelected ? 'ring-2 ring-blue-500/60 border-transparent' : 'border-transparent';
+    }
+  }, [data.status, isSelected]);
 
-  const renderNodeContent = () => {
+  const renderNodeContent = useCallback(() => {
     switch (node.type) {
       case NodeType.TEXT_INPUT:
         return (
           <textarea
-            className="w-full p-2 bg-gray-800 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            rows={3}
-            value={node.data.content || ''}
+            className="w-full h-full p-4 text-sm bg-transparent focus:outline-none resize-none placeholder-white/40"
+            style={{ color: 'var(--node-text-color, #ffffff)' }}
+            value={data.content || ''}
             onChange={(e) => updateNodeData(node.id, { content: e.target.value })}
-            placeholder="Enter text here..."
+            placeholder="Enter text..."
           />
         );
       case NodeType.IMAGE_INPUT:
-        return <FileUploader onFileUpload={(file) => updateNodeData(node.id, { content: file })} />;
+        return data.content ? (
+            <div className="relative w-full h-full group/image-input">
+                <img src={imageUrl!} alt="Input" className="object-contain w-full h-full" />
+                <button
+                    onClick={() => updateNodeData(node.id, { content: null })}
+                    className="absolute top-2 right-2 p-1 bg-black/50 backdrop-blur-md rounded-full text-white opacity-0 group-hover/image-input:opacity-100 transition-opacity z-10"
+                    aria-label="Remove image"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        ) : <div className="p-2 w-full h-full"><FileUploader onFileUpload={(file) => updateNodeData(node.id, { content: file })} /></div>;
       case NodeType.TEXT_GENERATOR:
       case NodeType.IMAGE_EDITOR:
       case NodeType.VIDEO_GENERATOR:
-          return <div className="p-2 text-sm text-gray-400">Ready to receive inputs.</div>;
+        return <div className="flex items-center justify-center h-full text-xs p-4 text-center" style={{ color: 'var(--node-text-color, #ffffff)', opacity: 0.7 }}>Ready for input</div>;
+      case NodeType.PROMPT_PRESET:
+        return (
+          <div className="flex items-center justify-center h-full">
+            <button
+              onClick={() => onEditPrompt(node.id)}
+              className="text-sm font-semibold transition-opacity hover:opacity-80"
+              style={{ color: 'var(--node-text-color, #ffffff)' }}
+            >
+              修改提示词
+            </button>
+          </div>
+        );
       case NodeType.OUTPUT_DISPLAY:
-        return <OutputDisplay content={node.data.content} status={node.data.status} errorMessage={node.data.errorMessage} progressMessage={node.data.content?.progress} />;
+        return <OutputDisplay content={data.content} status={data.status} errorMessage={data.errorMessage} progressMessage={data.content?.progress} />;
       default:
         return null;
     }
-  };
+  }, [node.type, data, node.id, updateNodeData, imageUrl, onEditPrompt]);
+  
+  const width = data.width || 320;
+  const height = data.height || (node.type === NodeType.IMAGE_INPUT || node.type === NodeType.OUTPUT_DISPLAY ? 350 : 150);
+  const isPresetNode = node.type === NodeType.PROMPT_PRESET;
 
   return (
-    <div
-      className={`absolute bg-gray-800 rounded-lg shadow-xl border-2 ${statusColor}`}
-      style={{
-        left: node.position.x,
-        top: node.position.y,
-        minWidth: 250,
-        transform: `scale(${node.data.scale || 1})`,
-        transformOrigin: 'top left',
-      }}
-      onMouseDown={(e) => onMouseDown(e, node.id)}
-    >
-      <NodeHeader type={node.type} />
-      <div className="relative p-4 border-t border-gray-700">
-        {node.data.inputs.map((input) => (
-          <Handle key={input.id} id={input.id} label={input.label} isInput={true} onMouseDown={(e) => onHandleMouseDown(e, node.id, input.id, 'input')} />
-        ))}
-        {node.data.outputs.map((output) => (
-          <Handle key={output.id} id={output.id} label={output.label} isInput={false} onMouseDown={(e) => onHandleMouseDown(e, node.id, output.id, 'output')} />
-        ))}
-        
-        <div className="pt-2 mt-2 border-t border-gray-700/50">
-            {renderNodeContent()}
+    <>
+      <div
+        className={`absolute flex flex-col ${isPresetNode ? 'items-center' : ''}`}
+        style={{
+          left: node.position.x,
+          top: node.position.y,
+          width: `${width}px`,
+          zIndex: node.zIndex,
+        }}
+      >
+        <div 
+          className="flex items-center gap-2 mb-2 px-1 cursor-move"
+          style={{ color: 'var(--node-text-color, #ffffff)' }}
+          onMouseDown={(e) => onMouseDown(e, node.id)}
+        >
+          {config.icon}
+          <h3 className="text-xs font-bold truncate">{config.title}</h3>
+          {data.isMuted && <MuteIcon className="w-4 h-4 opacity-70" title="This node is muted" />}
         </div>
-        
+
         <div
-          className="absolute bottom-0 right-0 w-3 h-3 bg-gray-600 border-2 border-gray-800 rounded-full cursor-se-resize hover:bg-indigo-500"
-          style={{ transform: 'translate(25%, 25%)' }}
-          onMouseDown={(e) => onResizeMouseDown(e, node.id)}
-        />
+          data-node-id={node.id}
+          className={`relative group/node backdrop-blur-xl shadow-2xl transition-all duration-200 ease-in-out border ${statusClasses} ${data.isMuted ? 'opacity-50' : ''} ${isPresetNode ? 'rounded-full' : 'rounded-2xl'}`}
+          style={{
+            width: `${width}px`,
+            height: `${height}px`,
+            backgroundColor: 'var(--node-background-color)',
+          }}
+          onMouseDown={(e) => onMouseDown(e, node.id)}
+        >
+          <div className={`relative w-full h-full overflow-hidden ${isPresetNode ? 'rounded-full' : 'rounded-2xl'}`}>
+            {renderNodeContent()}
+          </div>
+          
+          {data.inputs.map((input, index) => {
+              const total = data.inputs.length;
+              const topPercent = total > 1 ? (index / (total - 1)) * 80 + 10 : 50;
+              return (
+                <Handle
+                    key={input.id}
+                    id={input.id}
+                    label={input.label}
+                    isInput={true}
+                    onMouseDown={(e) => onHandleMouseDown(e, node.id, input.id, 'input')}
+                    type={input.type}
+                    style={{ top: `${topPercent}%` }}
+                    edgeColors={edgeColors}
+                />
+              );
+          })}
+          {data.outputs.map((output, index) => {
+              const total = data.outputs.length;
+              const topPercent = total > 1 ? (index / (total - 1)) * 80 + 10 : 50;
+              return (
+                <Handle
+                    key={output.id}
+                    id={output.id}
+                    label={output.label}
+                    isInput={false}
+                    onMouseDown={(e) => onHandleMouseDown(e, node.id, output.id, 'output')}
+                    type={output.type}
+                    style={{ top: `${topPercent}%` }}
+                    edgeColors={edgeColors}
+                />
+              );
+          })}
+          
+          {!isPresetNode && (
+            <div
+              className="absolute bottom-0 right-0 w-5 h-5 cursor-se-resize opacity-0 group-hover/node:opacity-100 transition-opacity"
+              onMouseDown={(e) => onResizeMouseDown(e, node.id)}
+            >
+              <svg className="w-full h-full text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 19L19 5" />
+              </svg>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
