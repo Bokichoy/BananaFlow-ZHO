@@ -7,8 +7,9 @@
 
 # 🍌｜BananaFlow｜ZHO
 
+基于 NanoBanana + Veo 的开源工作流创意平台
 
-##  + 全新功能：工作流 + 窗口 双模式纵享丝滑
+##  全新功能：工作流 + 窗口 双模式纵享丝滑
 
 
 <img width="2578" height="1572" alt="screenshot-20250911-183652" src="https://github.com/user-attachments/assets/1920deb8-f859-4528-8c4c-24f2d27080b8" />
